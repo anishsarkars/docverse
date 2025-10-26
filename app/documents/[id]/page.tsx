@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Save, Brain, Users } from 'lucide-react'
-import { io, Socket } from 'socket.io-client'
 
 interface User {
   id: string
@@ -32,7 +31,7 @@ export default function DocumentEditor() {
   const [typingUsers, setTypingUsers] = useState<Set<string>>(new Set())
   const [connectedUsers, setConnectedUsers] = useState<Set<string>>(new Set())
   
-  const socketRef = useRef<Socket | null>(null)
+  const socketRef = useRef<any>(null)
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   
@@ -93,55 +92,67 @@ export default function DocumentEditor() {
     }
   }
 
-  const initializeSocket = (doc: Document) => {
-    if (!user) return
+  const initializeSocket = async (doc: Document) => {
+    if (!user || typeof window === 'undefined') return
 
-    // Get session token from cookies
-    const sessionToken = typeof window !== 'undefined' ? 
-      (document as any).cookie?.split(';').find((c: string) => c.trim().startsWith('session='))?.split('=')[1] : 
-      null
+    try {
+      // Dynamically import Socket.IO only on client side
+      const { io } = await import('socket.io-client')
+      
+      // Get session token from cookies
+      const sessionToken = (document as any).cookie?.split(';').find((c: string) => c.trim().startsWith('session='))?.split('=')[1]
 
-    socketRef.current = io({
-      path: '/api/socketio',
-      auth: {
-        sessionToken
-      }
-    })
+      socketRef.current = io({
+        path: '/api/socketio',
+        auth: {
+          sessionToken
+        }
+      })
 
-    socketRef.current.on('connect', () => {
-      console.log('Connected to socket')
-      socketRef.current?.emit('join-document', documentId)
-    })
+      socketRef.current.on('connect', () => {
+        console.log('Connected to socket')
+        if (documentId) {
+          socketRef.current?.emit('join-document', documentId)
+        }
+      })
 
-    socketRef.current.on('document-updated', (data: { content: string; userId: string; timestamp: string }) => {
-      if (data.userId !== user.id) {
-        setContent(data.content)
-      }
-    })
+      socketRef.current.on('document-updated', (data: { content: string; userId: string; timestamp: string }) => {
+        if (data.userId !== user.id) {
+          setContent(data.content)
+        }
+      })
 
-    socketRef.current.on('user-joined', (data: { userId: string; userName: string }) => {
-      setConnectedUsers(prev => new Set([...prev, data.userName]))
-    })
+      socketRef.current.on('user-joined', (data: { userId: string; userName: string }) => {
+        setConnectedUsers(prev => new Set([...prev, data.userName]))
+      })
 
-    socketRef.current.on('user-typing', (data: { userId: string; userName: string }) => {
-      if (data.userId !== user.id) {
-        setTypingUsers(prev => new Set([...prev, data.userName]))
-      }
-    })
+      socketRef.current.on('user-typing', (data: { userId: string; userName: string }) => {
+        if (data.userId !== user.id) {
+          setTypingUsers(prev => new Set([...prev, data.userName]))
+        }
+      })
 
-    socketRef.current.on('user-stopped-typing', (data: { userId: string }) => {
-      if (data.userId !== user.id) {
-        setTypingUsers(prev => {
-          const newSet = new Set(prev)
-          newSet.delete(data.userId)
-          return newSet
-        })
-      }
-    })
+      socketRef.current.on('user-stopped-typing', (data: { userId: string }) => {
+        if (data.userId !== user.id) {
+          setTypingUsers(prev => {
+            const newSet = new Set(prev)
+            newSet.delete(data.userId)
+            return newSet
+          })
+        }
+      })
 
-    socketRef.current.on('error', (error: string) => {
-      console.error('Socket error:', error)
-    })
+      socketRef.current.on('error', (error: string) => {
+        console.error('Socket error:', error)
+      })
+
+      socketRef.current.on('disconnect', () => {
+        console.log('Socket disconnected')
+      })
+    } catch (error) {
+      console.error('Failed to initialize socket:', error)
+      // Continue without real-time features
+    }
   }
 
   const handleContentChange = (newContent: string) => {
@@ -158,34 +169,44 @@ export default function DocumentEditor() {
     }, 1000)
 
     // Emit typing status
-    if (socketRef.current && user) {
-      socketRef.current.emit('user-typing', {
-        documentId,
-        userId: user.id,
-        userName: user.name || user.email
-      })
-
-      // Clear existing typing timeout
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
-      }
-
-      // Stop typing after 2 seconds
-      typingTimeoutRef.current = setTimeout(() => {
-        socketRef.current?.emit('user-stopped-typing', {
+    if (socketRef.current && user && documentId) {
+      try {
+        socketRef.current.emit('user-typing', {
           documentId,
-          userId: user.id
+          userId: user.id,
+          userName: user.name || user.email
         })
-      }, 2000)
+
+        // Clear existing typing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current)
+        }
+
+        // Stop typing after 2 seconds
+        typingTimeoutRef.current = setTimeout(() => {
+          if (socketRef.current && user && documentId) {
+            socketRef.current.emit('user-stopped-typing', {
+              documentId,
+              userId: user.id
+            })
+          }
+        }, 2000)
+      } catch (error) {
+        console.error('Socket emit error:', error)
+      }
     }
 
     // Emit document change
-    if (socketRef.current && user) {
-      socketRef.current.emit('document-change', {
-        documentId,
-        content: newContent,
-        userId: user.id
-      })
+    if (socketRef.current && user && documentId) {
+      try {
+        socketRef.current.emit('document-change', {
+          documentId,
+          content: newContent,
+          userId: user.id
+        })
+      } catch (error) {
+        console.error('Socket emit error:', error)
+      }
     }
   }
 
