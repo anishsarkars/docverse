@@ -38,9 +38,11 @@ export default function DocumentEditor() {
   
   const router = useRouter()
   const params = useParams()
-  const documentId = params.id as string
+  const documentId = params?.id as string
 
   useEffect(() => {
+    if (!documentId) return
+    
     checkAuth()
     loadDocument()
     
@@ -67,6 +69,11 @@ export default function DocumentEditor() {
   }
 
   const loadDocument = async () => {
+    if (!documentId) {
+      router.push('/dashboard')
+      return
+    }
+    
     try {
       const response = await fetch(`/api/documents/${documentId}`)
       if (response.ok) {
@@ -91,7 +98,7 @@ export default function DocumentEditor() {
 
     // Get session token from cookies
     const sessionToken = typeof window !== 'undefined' ? 
-      document.cookie.split(';').find(c => c.trim().startsWith('session='))?.split('=')[1] : 
+      (document as any).cookie?.split(';').find((c: string) => c.trim().startsWith('session='))?.split('=')[1] : 
       null
 
     socketRef.current = io({
@@ -183,14 +190,14 @@ export default function DocumentEditor() {
   }
 
   const saveDocument = async (contentToSave?: string) => {
-    const content = contentToSave || content
+    const contentToUpdate = contentToSave || content
     setSaving(true)
     
     try {
       await fetch(`/api/documents/${documentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
+        body: JSON.stringify({ content: contentToUpdate })
       })
     } catch (error) {
       console.error('Failed to save document:', error)
