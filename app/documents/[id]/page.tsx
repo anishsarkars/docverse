@@ -243,8 +243,8 @@ export default function DocumentEditor() {
       if (part.startsWith('```') && part.endsWith('```')) {
         const code = part.slice(3, -3).trim()
         return (
-          <div key={index} className="code-block my-4">
-            <pre className="whitespace-pre-wrap">{code}</pre>
+          <div key={index} className="bg-gray-900 text-gray-100 rounded-2xl p-4 my-4 border border-gray-700">
+            <pre className="whitespace-pre-wrap font-mono text-sm overflow-x-auto">{code}</pre>
           </div>
         )
       }
@@ -269,11 +269,11 @@ export default function DocumentEditor() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Card */}
+        <div className="bg-white rounded-3xl shadow-2xl p-6 mb-8">
+          <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push('/dashboard')}
@@ -309,87 +309,92 @@ export default function DocumentEditor() {
             </div>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Editor */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg shadow-sm border">
-              <div className="p-6 border-b">
+        {/* Main Content Card */}
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Editor */}
+            <div className="lg:col-span-3">
+              <div className="mb-6">
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  className="text-2xl font-bold text-gray-900 w-full border-none outline-none"
+                  className="text-3xl font-bold text-gray-900 w-full border-none outline-none bg-transparent"
                   placeholder="Untitled Document"
                 />
               </div>
               
-              <div className="p-6">
+              <div className="min-h-[500px]">
                 <textarea
                   value={content}
                   onChange={(e) => handleContentChange(e.target.value)}
-                  className="w-full h-96 border-none outline-none resize-none text-gray-900 leading-relaxed"
-                  placeholder="Start writing your document..."
+                  className="w-full h-96 border-none outline-none resize-none text-gray-900 leading-relaxed bg-transparent"
+                  placeholder="Start writing your document...
+
+Use triple backticks for code blocks:
+```javascript
+function hello() {
+  console.log('Hello World!');
+}
+```"
                 />
                 
                 {/* Typing indicators */}
                 {typingUsers.size > 0 && (
-                  <div className="mt-4 text-sm text-gray-600">
+                  <div className="mt-4 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
                     {Array.from(typingUsers).join(', ')} {typingUsers.size === 1 ? 'is' : 'are'} typing...
                   </div>
                 )}
               </div>
             </div>
-          </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm border p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Document Info</h3>
-              
-              <div className="space-y-4 text-sm text-gray-600">
-                <div>
-                  <span className="font-medium">Created:</span>
-                  <br />
-                  {new Date(document.createdAt).toLocaleDateString()}
-                </div>
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="bg-gray-50 rounded-2xl p-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Document Info</h3>
                 
-                <div>
-                  <span className="font-medium">Last Updated:</span>
-                  <br />
-                  {new Date(document.updatedAt).toLocaleDateString()}
-                </div>
-                
-                <div>
-                  <span className="font-medium">Characters:</span>
-                  <br />
-                  {content.length.toLocaleString()}
-                </div>
-                
-                <div>
-                  <span className="font-medium">Words:</span>
-                  <br />
-                  {content.split(/\s+/).filter(word => word.length > 0).length.toLocaleString()}
+                <div className="space-y-4 text-sm text-gray-600">
+                  <div>
+                    <span className="font-medium">Created:</span>
+                    <br />
+                    {new Date(document.createdAt).toLocaleDateString()}
+                  </div>
+                  
+                  <div>
+                    <span className="font-medium">Last Updated:</span>
+                    <br />
+                    {new Date(document.updatedAt).toLocaleDateString()}
+                  </div>
+                  
+                  <div>
+                    <span className="font-medium">Characters:</span>
+                    <br />
+                    {content.length.toLocaleString()}
+                  </div>
+                  
+                  <div>
+                    <span className="font-medium">Words:</span>
+                    <br />
+                    {content.split(/\s+/).filter(word => word.length > 0).length.toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Summary Modal */}
       {showSummary && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-hidden">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-96 overflow-hidden shadow-2xl">
             <div className="p-6 border-b">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium text-gray-900">AI Summary</h3>
                 <button
                   onClick={() => setShowSummary(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
                 >
                   ×
                 </button>

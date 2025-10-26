@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { ArrowRight, Globe, ChevronDown, Search } from 'lucide-react'
+import { ArrowRight, Globe, ChevronDown, Search, Star } from 'lucide-react'
 
 export default function LandingPage() {
   const router = useRouter()
@@ -49,8 +49,8 @@ export default function LandingPage() {
         {/* Main Hero Content Area - Centered */}
         <main className="flex flex-col items-center text-center px-6 max-w-3xl">
           {/* Small "Smart Documentation" badge */}
-          <div className="flex items-center bg-white text-gray-700 text-sm px-3 py-1 rounded-full mb-8 border border-gray-200 shadow-sm">
-            <ArrowRight className="h-3 w-3 mr-1 text-gray-500" /> Smart Documentation <Search className="h-3 w-3 ml-1 text-gray-500" />
+          <div className="flex items-center bg-pink-100 text-pink-800 text-sm px-3 py-1 rounded-full mb-8">
+            <ArrowRight className="h-3 w-3 mr-1" /> Smart Documentation <Search className="h-3 w-3 ml-1" />
           </div>
 
           {/* Hero Headline */}
@@ -72,54 +72,82 @@ export default function LandingPage() {
           </button>
 
           {/* Small text below CTA */}
-          <p className="text-sm text-gray-500 mt-4">
-            Pause or cancel service anytime.
+          <p className="text-sm text-gray-500 mt-4 flex items-center">
+            <Star className="h-4 w-4 mr-1 text-orange-500" /> Pause or cancel service anytime.
           </p>
         </main>
+
+        {/* Company Logos Section */}
+        <section className="mt-16 w-full">
+          <div className="flex justify-center items-center space-x-8 opacity-40">
+            <span className="text-gray-400 text-sm">Retool</span>
+            <span className="text-gray-400 text-sm">Remote</span>
+            <span className="text-gray-400 text-sm">ARC</span>
+            <span className="text-gray-400 text-sm">Raycast</span>
+            <span className="text-gray-400 text-sm">Runway</span>
+            <span className="text-gray-400 text-sm">Ramp</span>
+            <span className="text-gray-400 text-sm">HEX</span>
+            <span className="text-gray-400 text-sm">Vercel</span>
+            <span className="text-gray-400 text-sm">Descript</span>
+            <span className="text-gray-400 text-sm">Cash App</span>
+          </div>
+        </section>
 
         {/* Bottom Images Section */}
         <section className="mt-16 w-full">
           <div className="grid grid-cols-6 gap-4">
-            {/* Documentation-themed images */}
-            <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl h-32 flex items-center justify-center">
+            {/* Documentation-themed images with aesthetic gradients */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl h-32 flex items-center justify-center border border-blue-200">
               <div className="text-center">
-                <div className="text-2xl mb-2">📝</div>
-                <div className="text-xs text-blue-800 font-medium">API Docs</div>
+                <div className="w-12 h-12 bg-blue-200 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <div className="w-6 h-6 bg-blue-600 rounded"></div>
+                </div>
+                <div className="text-xs text-blue-700 font-medium">API Docs</div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-green-100 to-green-200 rounded-xl h-32 flex items-center justify-center">
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl h-32 flex items-center justify-center border border-green-200">
               <div className="text-center">
-                <div className="text-2xl mb-2">💻</div>
-                <div className="text-xs text-green-800 font-medium">Code Blocks</div>
+                <div className="w-12 h-12 bg-green-200 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <div className="w-6 h-6 bg-green-600 rounded"></div>
+                </div>
+                <div className="text-xs text-green-700 font-medium">Code Blocks</div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl h-32 flex items-center justify-center">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl h-32 flex items-center justify-center border border-purple-200">
               <div className="text-center">
-                <div className="text-2xl mb-2">🤝</div>
-                <div className="text-xs text-purple-800 font-medium">Collaborate</div>
+                <div className="w-12 h-12 bg-purple-200 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <div className="w-6 h-6 bg-purple-600 rounded"></div>
+                </div>
+                <div className="text-xs text-purple-700 font-medium">Collaborate</div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-orange-100 to-orange-200 rounded-xl h-32 flex items-center justify-center">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl h-32 flex items-center justify-center border border-orange-200">
               <div className="text-center">
-                <div className="text-2xl mb-2">🧠</div>
-                <div className="text-xs text-orange-800 font-medium">AI Summary</div>
+                <div className="w-12 h-12 bg-orange-200 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <div className="w-6 h-6 bg-orange-600 rounded"></div>
+                </div>
+                <div className="text-xs text-orange-700 font-medium">AI Summary</div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-pink-100 to-pink-200 rounded-xl h-32 flex items-center justify-center">
+            <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl h-32 flex items-center justify-center border border-pink-200">
               <div className="text-center">
-                <div className="text-2xl mb-2">⚡</div>
-                <div className="text-xs text-pink-800 font-medium">Real-time</div>
+                <div className="w-12 h-12 bg-pink-200 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <div className="w-6 h-6 bg-pink-600 rounded"></div>
+                </div>
+                <div className="text-xs text-pink-700 font-medium">Real-time</div>
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-indigo-100 to-indigo-200 rounded-xl h-32 flex items-center justify-center">
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl h-32 flex items-center justify-center border border-indigo-200">
               <div className="text-center">
-                <div className="text-2xl mb-2">📚</div>
-                <div className="text-xs text-indigo-800 font-medium">Knowledge</div>
+                <div className="w-12 h-12 bg-indigo-200 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                  <div className="w-6 h-6 bg-indigo-600 rounded"></div>
+                </div>
+                <div className="text-xs text-indigo-700 font-medium">Knowledge</div>
               </div>
             </div>
           </div>
